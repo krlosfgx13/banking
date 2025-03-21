@@ -33,14 +33,12 @@ constraint fk_bank_account_category_bank_account_type
 foreign key(bank_account_type_id) references bank_account_type(bank_account_type_id)
 );
 
-select * from person;
-
 create table person(
 person_id serial primary key not null,
 DPI varchar(32) not null, 
 NIT varchar(32) not null, 
 first_name varchar(32) not null,
-second_name varchar(32) not null,
+second_name varchar(32) null,
 last_name varchar(32) not null,
 second_last_name varchar(32) null,
 address varchar(256) not null,
@@ -148,36 +146,36 @@ insert into role(role_name) values ('USER'), ('ADMIN');
 --check roles
 --SELECT * FROM pg_roles WHERE rolname = 'dbuser';
 
-select * from person;
-select * from user_account;
-select * from role;
-select * from user_role;
+-- select * from person;
+-- select * from user_account;
+-- select * from role;
+-- select * from user_role;
 
---users and roles.
-select ua.user_account_id, ua.user_name, r.role_name, r.role_id 
-from user_account ua 
-join user_role ur on ua.user_account_id = ur.user_account_id
-join role r on ur.role_id = r.role_id;
+-- --users and roles.
+-- select ua.user_account_id, ua.user_name, r.role_name, r.role_id 
+-- from user_account ua 
+-- join user_role ur on ua.user_account_id = ur.user_account_id
+-- join role r on ur.role_id = r.role_id;
 
-select * from user_role where user_account_id = 2;
+-- select * from user_role where user_account_id = 2;
 
-insert into user_account(user_name, password, person_id, is_active)
-values('jgomez', '12345678', 1, true);
+-- insert into user_account(user_name, password, person_id, is_active)
+-- values('jgomez', '12345678', 1, true);
 
-insert into user_role(user_account_id, role_id)
-values(2,2);
+-- insert into user_role(user_account_id, role_id)
+-- values(2,2);
 
-select * from person;
-select * from user_account;
-select * from user_role;
+-- select * from person;
+-- select * from user_account;
+-- select * from user_role;
 
-select * from card where is_active = true;
-select * from card_type;
-SELECT * FROM CARD_NETWORK;
+-- select * from card where is_active = true;
+-- select * from card_type;
+-- SELECT * FROM CARD_NETWORK;
 
-select * from card_transaction order by transaction_date desc;
+-- select * from card_transaction order by transaction_date desc;
 
-select * from person;
+-- select * from person;
 
 
 
