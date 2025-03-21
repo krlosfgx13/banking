@@ -118,6 +118,21 @@ references bank_account_category(bank_account_category_id),
 constraint fk_bank_account_person foreign key(person_id) references person(person_id)
 );
 
+create table role(
+role_id serial primary key not null,
+role_name varchar(32) not null
+);
+
+create table user_role(
+user_role_id serial primary key not null,
+user_account_id int not null,
+role_id int not null,
+
+CONSTRAINT fk_user_role_user_account FOREIGN KEY(user_account_id) REFERENCES user_account(user_account_id),
+CONSTRAINT fk_user_role_role FOREIGN KEY(role_id) REFERENCES role(role_id)
+);
+
+insert into role(role_name) values ('USER'), ('ADMIN');
 
 --check database names
 --select datname from pg_database; 
@@ -125,6 +140,28 @@ constraint fk_bank_account_person foreign key(person_id) references person(perso
 --check roles
 --SELECT * FROM pg_roles WHERE rolname = 'dbuser';
 
+select * from person;
+select * from user_account;
+select * from role;
+select * from user_role;
+
+--users and roles.
+select ua.user_account_id, ua.user_name, r.role_name, r.role_id 
+from user_account ua 
+join user_role ur on ua.user_account_id = ur.user_account_id
+join role r on ur.role_id = r.role_id;
+
+select * from user_role where user_account_id = 2;
+
+insert into user_account(user_name, password, person_id, is_active)
+values('jgomez', '12345678', 1, true);
+
+insert into user_role(user_account_id, role_id)
+values(2,2);
+
+select * from person;
+select * from user_account;
+select * from user_role;
 
 
 
