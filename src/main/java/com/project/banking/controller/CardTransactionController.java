@@ -7,6 +7,7 @@ import com.project.banking.response.BaseResponse;
 import com.project.banking.serialization.CardTransactionsByUser;
 import com.project.banking.serialization.CompanyCategoryDetail;
 import com.project.banking.service.CardTransactionService;
+import com.project.banking.utils.MessageConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -52,15 +53,15 @@ public class CardTransactionController {
             logger.error(vre.getMessage());
             return new ResponseEntity<>(BaseResponse
                     .builder()
-                    .status("FAILED")
-                    .message("INVALID REQUEST DATA")
+                    .status(MessageConstants.FAILED)
+                    .message(MessageConstants.INVALID_REQUEST_DATA)
                     .build(), HttpStatus.BAD_REQUEST);
         } catch (Exception ex){
             logger.error(ex.getMessage());
             return new ResponseEntity<>(BaseResponse
                     .builder()
-                    .status("FAILED")
-                    .message("UNEXPECTED ERROR")
+                    .status(MessageConstants.FAILED)
+                    .message(MessageConstants.UNEXPECTED_ERROR)
                     .build(), HttpStatus.FORBIDDEN);
         }
     }
@@ -125,7 +126,6 @@ public class CardTransactionController {
             return new ResponseEntity<>(Collections.emptyList(), HttpStatus.NO_CONTENT);
         }
     }
-
 
     private void validateRequest(CardTransactionRequest request){
         if (Objects.isNull(request.getTransactionAmount())){

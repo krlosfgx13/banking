@@ -33,6 +33,8 @@ constraint fk_bank_account_category_bank_account_type
 foreign key(bank_account_type_id) references bank_account_type(bank_account_type_id)
 );
 
+select * from person;
+
 create table person(
 person_id serial primary key not null,
 DPI varchar(32) not null, 
@@ -40,7 +42,7 @@ NIT varchar(32) not null,
 first_name varchar(32) not null,
 second_name varchar(32) not null,
 last_name varchar(32) not null,
-second_last_name varchar(32) not null,
+second_last_name varchar(32) null,
 address varchar(256) not null,
 phone_number varchar(32) not null,
 email_address varchar(128) not null,
@@ -132,6 +134,12 @@ CONSTRAINT fk_user_role_user_account FOREIGN KEY(user_account_id) REFERENCES use
 CONSTRAINT fk_user_role_role FOREIGN KEY(role_id) REFERENCES role(role_id)
 );
 
+create table api_user(
+api_user_id serial primary key not null,
+api_user_name varchar(64) not null,
+password varchar(256) not null
+);
+
 insert into role(role_name) values ('USER'), ('ADMIN');
 
 --check database names
@@ -162,6 +170,15 @@ values(2,2);
 select * from person;
 select * from user_account;
 select * from user_role;
+
+select * from card where is_active = true;
+select * from card_type;
+SELECT * FROM CARD_NETWORK;
+
+select * from card_transaction order by transaction_date desc;
+
+select * from person;
+
 
 
 

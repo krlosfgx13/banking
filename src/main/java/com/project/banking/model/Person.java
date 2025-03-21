@@ -20,13 +20,13 @@ public class Person {
     @Column(name = "first_name", nullable = false, length = 32)
     private String firstName;
 
-    @Column(name = "second_name", nullable = false, length = 32)
+    @Column(name = "second_name", nullable = true, length = 32)
     private String secondName;
 
     @Column(name = "last_name", nullable = false, length = 32)
     private String lastName;
 
-    @Column(name = "second_last_name", nullable = false, length = 32)
+    @Column(name = "second_last_name", nullable = true, length = 32)
     private String secondLastName;
 
     @Column(name = "address", nullable = false, length = 256)
