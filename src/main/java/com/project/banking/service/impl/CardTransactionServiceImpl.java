@@ -135,7 +135,7 @@ public class CardTransactionServiceImpl implements CardTransactionService {
                 "join person p on c.person_id = p.person_id\n" +
                 "join user_account u on p.person_id = u.person_id\n" +
                 "where u.user_name = :userName\n" +
-                "order by ct.transaction_date desc;";
+                "order by ct.transaction_date desc";
         SqlParameterSource params = new MapSqlParameterSource("userName", userName);
         List<CardTransactionsByUser> listOfTransactions = jdbcTemplate.query(selectStatement, params, new BeanPropertyRowMapper<>(CardTransactionsByUser.class));
         return listOfTransactions;
