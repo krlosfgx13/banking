@@ -15,12 +15,12 @@ import com.project.banking.serialization.CardTransactionsByUser;
 import com.project.banking.serialization.CompanyCategoryDetail;
 import com.project.banking.service.CardTransactionService;
 import com.project.banking.utils.CardConstants;
+import com.project.banking.utils.MessageConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -53,13 +53,13 @@ public class CardTransactionServiceImpl implements CardTransactionService {
         Optional<Card> optionalCard = cardRepository.findByCardNumber(request.getCardNumber());
 
         if (optionalCard.isEmpty()) {
-            return createResponse("FAILED","Card does not exist.");
+            return createResponse(MessageConstants.FAILED,MessageConstants.CARD_DOES_NOT_EXIST);
         }
 
         Card card = optionalCard.get();
 
         if (!validateCardInfo(card)) {
-            return createResponse("FAILED","Invalid card information.");
+            return createResponse("FAILED","Invalid card information: Inactive or Expired.");
         }
 
         if(request.getCardType().equals(CREDIT.getName())){
@@ -141,6 +141,11 @@ public class CardTransactionServiceImpl implements CardTransactionService {
         return listOfTransactions;
     }
 
+    @Override
+    public int calculatePointAccumulation(Card card, BigDecimal transactionAmount) {
+        return accumPoints(card, transactionAmount);
+    }
+
     private static int accumulatePointsOrMiles(Card card, BigDecimal transactionAmount){
         /*
          * (amount / 8) * 1 = CLASSIC
@@ -187,7 +192,7 @@ public class CardTransactionServiceImpl implements CardTransactionService {
 
             case CardConstants.PLATINUM_CARD -> transactionAmount
                     .divideToIntegralValue(new BigDecimal(CardConstants.DOLLAR_AMOUNT))
-                    .multiply(new BigDecimal(CardConstants.PLATINUM_CARD)).intValue();
+                    .multiply(new BigDecimal(CardConstants.PLATINUM_CARD_REWARD_ACCUMULATION)).intValue();
 
             case CardConstants.BLACK_CARD -> transactionAmount
                     .divideToIntegralValue(new BigDecimal(CardConstants.DOLLAR_AMOUNT))
@@ -206,15 +211,15 @@ public class CardTransactionServiceImpl implements CardTransactionService {
                     + accumulatePointsOrMiles(card, request.getTransactionAmount()));
             cardRepository.save(card);
             saveCardTransaction(card, request);
-            return createResponse("SUCCESS", "Transaction approved.");
+            return createResponse(MessageConstants.SUCCESS, MessageConstants.TRANSACTION_APPROVED);
         } else
-            return createResponse("FAILED","Insufficient credit.");
+            return createResponse(MessageConstants.FAILED,MessageConstants.INSUFFICIENT_CREDIT);
     }
 
     private BaseResponse debitCardPayment(Card card, CardTransactionRequest request){
         Optional<BankAccount> optionalBankAccount = bankAccountRepository.findByCardId(card.getId());
         if(optionalBankAccount.isEmpty())
-            return createResponse("FAILED", "Bank Account does not exist.");
+            return createResponse(MessageConstants.FAILED, MessageConstants.BANK_ACCOUNT_DOES_NOT_EXIST);
 
         BankAccount bankAccount = optionalBankAccount.get();
         BigDecimal balance = bankAccount.getBalance();
@@ -223,9 +228,9 @@ public class CardTransactionServiceImpl implements CardTransactionService {
             bankAccount.setBalance(balance.subtract(request.getTransactionAmount()));
             bankAccountRepository.save(bankAccount);
             saveCardTransaction(card, request);
-            return createResponse("SUCCESS", "Transaction approved.");
+            return createResponse(MessageConstants.SUCCESS, MessageConstants.TRANSACTION_APPROVED);
         } else
-            return createResponse("FAILED", "Insufficient funds.");
+            return createResponse(MessageConstants.FAILED, MessageConstants.INSUFFICIENT_FUNDS);
     }
 
     private void saveCardTransaction(Card card, CardTransactionRequest request){

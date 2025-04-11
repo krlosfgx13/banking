@@ -4,6 +4,7 @@ import com.project.banking.exception.ValidateRequestException;
 import com.project.banking.model.CardTransaction;
 import com.project.banking.request.CardTransactionRequest;
 import com.project.banking.response.BaseResponse;
+import com.project.banking.response.QueryRewardResponse;
 import com.project.banking.serialization.CardTransactionsByUser;
 import com.project.banking.serialization.CompanyCategoryDetail;
 import com.project.banking.service.CardService;
@@ -92,6 +93,31 @@ public class CardTransactionController {
                     .message(MessageConstants.UNEXPECTED_ERROR)
                     .build(), HttpStatus.FORBIDDEN);
         }
+    }
+
+    @GetMapping("card/transaction/points/query")
+    public ResponseEntity<QueryRewardResponse> queryRewardAmount(@PathVariable("creditCardNumber") String creditCardNumber){
+//        try{
+//            return new ResponseEntity<>(cardTransactionService.queryRewardAmount(
+//                    cardService.getCardByNumber(creditCardNumber)),
+//                    HttpStatus.OK);
+//
+//        } catch (ValidateRequestException vre) {
+//            logger.error(vre.getMessage());
+//            return new ResponseEntity<>(BaseResponse
+//                    .builder()
+//                    .status(MessageConstants.FAILED)
+//                    .message(MessageConstants.INVALID_REQUEST_DATA)
+//                    .build(), HttpStatus.BAD_REQUEST);
+//        } catch (Exception ex){
+//            logger.error(ex.getMessage());
+//            return new ResponseEntity<>(BaseResponse
+//                    .builder()
+//                    .status(MessageConstants.FAILED)
+//                    .message(MessageConstants.UNEXPECTED_ERROR)
+//                    .build(), HttpStatus.FORBIDDEN);
+//        }
+        return null;
     }
 
     @GetMapping("card/transaction/{id}")

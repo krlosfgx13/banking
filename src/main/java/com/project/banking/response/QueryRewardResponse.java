@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 public class QueryRewardResponse {
+    private String cardNumber;
     private Integer rewardAmount;
     private BigDecimal moneyAmount;
 }

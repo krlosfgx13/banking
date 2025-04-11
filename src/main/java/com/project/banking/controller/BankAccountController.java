@@ -1,9 +1,6 @@
 package com.project.banking.controller;
 
 import com.project.banking.exception.ValidateRequestException;
-import com.project.banking.model.BankAccount;
-import com.project.banking.repository.BankAccountRepository;
-import com.project.banking.request.PayCreditCardRequest;
 import com.project.banking.request.TransferMoneyRequest;
 import com.project.banking.response.BaseResponse;
 import com.project.banking.service.BankAccountService;

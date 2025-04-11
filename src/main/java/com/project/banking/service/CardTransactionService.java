@@ -24,4 +24,5 @@ public interface CardTransactionService {
     List<CardTransaction> getCardTransactionByDateRange(LocalDateTime startDate, LocalDateTime endDate);
     Page<CardTransaction> getCardTransactionPageByDateRange(int pageNo, int pageSize, LocalDateTime startDate, LocalDateTime endDate);
     List<CardTransactionsByUser> getCardTransactionsByUser(String userName);
+    int calculatePointAccumulation(Card card, BigDecimal transactionAmount);
 }
