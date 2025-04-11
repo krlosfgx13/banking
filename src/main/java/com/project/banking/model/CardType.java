@@ -1,8 +1,10 @@
 package com.project.banking.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 
 @Entity
+@Getter
 @Table(name = "card_type")
 public class CardType {
     @Id

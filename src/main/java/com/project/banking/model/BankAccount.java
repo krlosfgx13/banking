@@ -42,35 +42,6 @@ public class BankAccount {
     @Column(name = "created_date", nullable = false)
     private LocalDateTime createdDate;
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setAccountNumber(String accountNumber) {
-        this.accountNumber = accountNumber;
-    }
-
-    public void setBalance(BigDecimal balance) {
-        this.balance = balance;
-    }
-
-    public void setCard(Card card) {
-        this.card = card;
-    }
-
-    public void setBankAccountType(BankAccountType bankAccountType) {
-        this.bankAccountType = bankAccountType;
-    }
-
-    public void setBankAccountCategory(BankAccountCategory bankAccountCategory) {
-        this.bankAccountCategory = bankAccountCategory;
-    }
-
-    public void setPerson(Person person) {
-        this.person = person;
-    }
-
-    public void setCreatedDate(LocalDateTime createdDate) {
-        this.createdDate = createdDate;
-    }
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive;
 }

@@ -6,6 +6,7 @@ import com.project.banking.request.CardTransactionRequest;
 import com.project.banking.response.BaseResponse;
 import com.project.banking.serialization.CardTransactionsByUser;
 import com.project.banking.serialization.CompanyCategoryDetail;
+import com.project.banking.service.CardService;
 import com.project.banking.service.CardTransactionService;
 import com.project.banking.utils.MessageConstants;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class CardTransactionController {
 
     private final Logger logger = LoggerFactory.getLogger(CardTransactionController.class);
     private final CardTransactionService cardTransactionService;
+    private final CardService cardService;
 
     //Just example. Should go on another project.
     @GetMapping("company/category")
@@ -48,6 +50,32 @@ public class CardTransactionController {
         try{
             validateRequest(request);
             return new ResponseEntity<>(cardTransactionService.processPayment(request), HttpStatus.OK);
+
+        } catch (ValidateRequestException vre) {
+            logger.error(vre.getMessage());
+            return new ResponseEntity<>(BaseResponse
+                    .builder()
+                    .status(MessageConstants.FAILED)
+                    .message(vre.getMessage())
+                    .build(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex){
+            logger.error(ex.getMessage());
+            return new ResponseEntity<>(BaseResponse
+                    .builder()
+                    .status(MessageConstants.FAILED)
+                    .message(MessageConstants.UNEXPECTED_ERROR)
+                    .build(), HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @PostMapping("card/transaction/points")
+    public ResponseEntity<BaseResponse> processPaymentWithPoints(@RequestBody CardTransactionRequest request){
+        try{
+            validateRequest(request);
+            return new ResponseEntity<>(cardTransactionService.processPaymentWithPoints(
+                    cardService.getCardByNumber(request.getCardNumber()),
+                    request.getTransactionAmount()),
+                    HttpStatus.OK);
 
         } catch (ValidateRequestException vre) {
             logger.error(vre.getMessage());

@@ -10,6 +10,7 @@ import com.project.banking.repository.CardRepository;
 import com.project.banking.repository.CardTransactionRepository;
 import com.project.banking.request.CardTransactionRequest;
 import com.project.banking.response.BaseResponse;
+import com.project.banking.response.QueryRewardResponse;
 import com.project.banking.serialization.CardTransactionsByUser;
 import com.project.banking.serialization.CompanyCategoryDetail;
 import com.project.banking.service.CardTransactionService;
@@ -68,6 +69,16 @@ public class CardTransactionServiceImpl implements CardTransactionService {
         }
         else
             return debitCardPayment(card, request);
+    }
+
+    @Override
+    public BaseResponse processPaymentWithPoints(Card creditCard, BigDecimal transactionAmount) {
+        return null;
+    }
+
+    @Override
+    public QueryRewardResponse queryRewardAmount(Card card) {
+        return null;
     }
 
     @Override
@@ -131,19 +142,33 @@ public class CardTransactionServiceImpl implements CardTransactionService {
     }
 
     private static int accumulatePointsOrMiles(Card card, BigDecimal transactionAmount){
+        /*
+         * (amount / 8) * 1 = CLASSIC
+         * (amount / 8) * 1.25 = GOLD
+         * (amount / 8) * 1.5 = PLATINUM
+         * (amount / 8) * 2 =  BLACK
+         * */
         int accumulatedPoints = 0;
         switch (card.getCardCategory().getCardCategoryName()){
             case CardConstants.CLASSIC_CARD :
-                accumulatedPoints = transactionAmount.divideToIntegralValue(new BigDecimal(CardConstants.CLASSIC_CARD_REWARD_ACCUMULATION)).intValue();
+                accumulatedPoints = transactionAmount
+                        .divideToIntegralValue(new BigDecimal(CardConstants.DOLLAR_AMOUNT))
+                        .multiply(new BigDecimal(CardConstants.CLASSIC_CARD_REWARD_ACCUMULATION)).intValue();
                 break;
             case CardConstants.GOLD_CARD:
-                accumulatedPoints = transactionAmount.divideToIntegralValue(new BigDecimal(CardConstants.GOLD_CARD_REWARD_ACCUMULATION)).intValue();
+                accumulatedPoints = transactionAmount
+                        .divideToIntegralValue(new BigDecimal(CardConstants.DOLLAR_AMOUNT))
+                        .multiply(new BigDecimal(CardConstants.GOLD_CARD_REWARD_ACCUMULATION)).intValue();
                 break;
             case CardConstants.PLATINUM_CARD:
-                accumulatedPoints = transactionAmount.divideToIntegralValue(new BigDecimal(CardConstants.PLATINUM_CARD_REWARD_ACCUMULATION)).intValue();
+                accumulatedPoints = transactionAmount
+                        .divideToIntegralValue(new BigDecimal(CardConstants.DOLLAR_AMOUNT))
+                        .multiply(new BigDecimal(CardConstants.PLATINUM_CARD_REWARD_ACCUMULATION)).intValue();
                 break;
             case CardConstants.BLACK_CARD:
-                accumulatedPoints = transactionAmount.divideToIntegralValue(new BigDecimal(CardConstants.BLACK_CARD_REWARD_ACCUMULATION)).intValue();
+                accumulatedPoints = transactionAmount
+                        .divideToIntegralValue(new BigDecimal(CardConstants.DOLLAR_AMOUNT))
+                        .multiply(new BigDecimal(CardConstants.BLACK_CARD_REWARD_ACCUMULATION)).intValue();
                 break;
         }
         return accumulatedPoints;
@@ -152,10 +177,22 @@ public class CardTransactionServiceImpl implements CardTransactionService {
     //with enhanced switch
     private static int accumPoints(Card card, BigDecimal transactionAmount){
         return switch (card.getCardCategory().getCardCategoryName()){
-            case CardConstants.CLASSIC_CARD -> transactionAmount.divideToIntegralValue(new BigDecimal(CardConstants.CLASSIC_CARD)).intValue();
-            case CardConstants.GOLD_CARD -> transactionAmount.divideToIntegralValue(new BigDecimal(CardConstants.GOLD_CARD)).intValue();
-            case CardConstants.PLATINUM_CARD -> transactionAmount.divideToIntegralValue(new BigDecimal(CardConstants.PLATINUM_CARD)).intValue();
-            case CardConstants.BLACK_CARD -> transactionAmount.divideToIntegralValue(new BigDecimal(CardConstants.BLACK_CARD)).intValue();
+            case CardConstants.CLASSIC_CARD -> transactionAmount
+                    .divideToIntegralValue(new BigDecimal(CardConstants.DOLLAR_AMOUNT))
+                    .multiply(new BigDecimal(CardConstants.CLASSIC_CARD_REWARD_ACCUMULATION)).intValue();
+
+            case CardConstants.GOLD_CARD -> transactionAmount
+                    .divideToIntegralValue(new BigDecimal(CardConstants.DOLLAR_AMOUNT))
+                    .multiply(new BigDecimal(CardConstants.GOLD_CARD_REWARD_ACCUMULATION)).intValue();
+
+            case CardConstants.PLATINUM_CARD -> transactionAmount
+                    .divideToIntegralValue(new BigDecimal(CardConstants.DOLLAR_AMOUNT))
+                    .multiply(new BigDecimal(CardConstants.PLATINUM_CARD)).intValue();
+
+            case CardConstants.BLACK_CARD -> transactionAmount
+                    .divideToIntegralValue(new BigDecimal(CardConstants.DOLLAR_AMOUNT))
+                    .multiply(new BigDecimal(CardConstants.BLACK_CARD_REWARD_ACCUMULATION)).intValue();
+
             default -> 0;
         };
     }
