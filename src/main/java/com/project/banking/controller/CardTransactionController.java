@@ -74,7 +74,7 @@ public class CardTransactionController {
         try{
             validateRequest(request);
             return new ResponseEntity<>(cardTransactionService.processPaymentWithPoints(
-                    cardService.getCardByNumber(request.getCardNumber()),
+                    request.getCardNumber(),
                     request.getTransactionAmount()),
                     HttpStatus.OK);
 
@@ -95,29 +95,28 @@ public class CardTransactionController {
         }
     }
 
-    @GetMapping("card/transaction/points/query")
-    public ResponseEntity<QueryRewardResponse> queryRewardAmount(@PathVariable("creditCardNumber") String creditCardNumber){
-//        try{
-//            return new ResponseEntity<>(cardTransactionService.queryRewardAmount(
-//                    cardService.getCardByNumber(creditCardNumber)),
-//                    HttpStatus.OK);
-//
-//        } catch (ValidateRequestException vre) {
-//            logger.error(vre.getMessage());
-//            return new ResponseEntity<>(BaseResponse
-//                    .builder()
-//                    .status(MessageConstants.FAILED)
-//                    .message(MessageConstants.INVALID_REQUEST_DATA)
-//                    .build(), HttpStatus.BAD_REQUEST);
-//        } catch (Exception ex){
-//            logger.error(ex.getMessage());
-//            return new ResponseEntity<>(BaseResponse
-//                    .builder()
-//                    .status(MessageConstants.FAILED)
-//                    .message(MessageConstants.UNEXPECTED_ERROR)
-//                    .build(), HttpStatus.FORBIDDEN);
-//        }
-        return null;
+    @GetMapping("card/transaction/points/query/{cardNumber}")
+    public ResponseEntity<QueryRewardResponse> queryRewardAmount(@PathVariable("cardNumber") String cardNumber){
+        try{
+            return new ResponseEntity<>(cardTransactionService.queryRewardAmount(cardNumber),
+                    HttpStatus.OK);
+        } catch (ValidateRequestException vre) {
+            logger.error(vre.getMessage());
+            return new ResponseEntity<>(QueryRewardResponse
+                    .builder()
+                    .status(MessageConstants.FAILED)
+                    .message(MessageConstants.INVALID_REQUEST_DATA)
+                    .build(), HttpStatus.BAD_REQUEST);
+        } catch (Exception ex){
+            logger.error(ex.getMessage());
+            return new ResponseEntity<>(QueryRewardResponse
+                    .builder()
+                    .status(MessageConstants.FAILED)
+                    .message(MessageConstants.UNEXPECTED_ERROR)
+                    .build(), HttpStatus.FORBIDDEN);
+        }
+
+        //return null;
     }
 
     @GetMapping("card/transaction/{id}")

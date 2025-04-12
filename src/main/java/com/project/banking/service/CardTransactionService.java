@@ -16,8 +16,8 @@ import java.util.List;
 public interface CardTransactionService {
 
     BaseResponse processPayment(CardTransactionRequest request);
-    BaseResponse processPaymentWithPoints(Card creditCard, BigDecimal transactionAmount);
-    QueryRewardResponse queryRewardAmount(Card card);
+    BaseResponse processPaymentWithPoints(String cardNumber, BigDecimal transactionAmount);
+    QueryRewardResponse queryRewardAmount(String cardNumber);
     List<CompanyCategoryDetail> getCompanyCategoryDetail();
     CardTransaction getCardTransaction(Long id);
     List<CardTransaction> getCardTransactions();

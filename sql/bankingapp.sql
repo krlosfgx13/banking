@@ -140,6 +140,16 @@ password varchar(256) not null
 
 insert into role(role_name) values ('USER'), ('ADMIN');
 
+create table card_transaction_reward(
+card_transaction_reward_id serial primary key not null,
+card_id int not null,
+reward_amount int not null,
+transaction_amount numeric(8,2) not null,
+transaction_date timestamp not null default current_timestamp,
+
+constraint fk_card_transaction_reward_card foreign key(card_id) references card(card_id)
+);
+
 --check database names
 --select datname from pg_database; 
 

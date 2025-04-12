@@ -1,15 +1,15 @@
 package com.project.banking.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
+@Getter
+@Setter
 public class BaseResponse {
-    private String message;
-    private String status;
+    protected String message;
+    protected String status;
 }

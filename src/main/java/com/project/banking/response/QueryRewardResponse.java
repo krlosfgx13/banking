@@ -1,15 +1,16 @@
 package com.project.banking.response;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 
-@Builder
+@SuperBuilder
 @Getter
 @Setter
-public class QueryRewardResponse {
+@AllArgsConstructor
+@NoArgsConstructor
+public class QueryRewardResponse extends BaseResponse {
     private String cardNumber;
     private Integer rewardAmount;
     private BigDecimal moneyAmount;

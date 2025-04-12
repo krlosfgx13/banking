@@ -3,8 +3,7 @@ package com.project.banking.utils;
 public abstract class CardConstants {
     public static final Long POINTS = 1L;
     public static final Long MILES = 2L;
-    public static final int POINTS_VALUE = 8;
-    public static final int MILES_VALUE = 6;
+    public static final double REWARD_VALUE = 0.06;
     public static final double DOLLAR_AMOUNT = 8;
     public static final double CLASSIC_CARD_REWARD_ACCUMULATION = 1;
     public static final double GOLD_CARD_REWARD_ACCUMULATION = 1.25;

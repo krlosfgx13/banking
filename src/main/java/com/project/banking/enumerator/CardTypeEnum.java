@@ -1,12 +1,12 @@
 package com.project.banking.enumerator;
 
-public enum CardType {
+public enum CardTypeEnum {
     CREDIT("Credit"),
     DEBIT("Debit");
 
     private final String name;
 
-    CardType(String name) {
+    CardTypeEnum(String name) {
         this.name = name;
     }
 

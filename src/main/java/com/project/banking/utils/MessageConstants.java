@@ -11,7 +11,8 @@ public abstract class MessageConstants {
     public static final String INVALID_REQUEST_DATA = "Invalid request data.";
     public static final String CARD_DOES_NOT_EXIST = "Card does not exist.";
     public static final String BANK_ACCOUNT_DOES_NOT_EXIST = "Bank Account does not exist.";
-    public static final String INACTIVE_OR_INVALID_CARD = "Invalid card information: Inactive or Expired.";
+    public static final String INACTIVE_OR_EXPIRED_CARD = "Invalid card information: Inactive or Expired.";
     public static final String INSUFFICIENT_CREDIT = "Insufficient credit.";
     public static final String INSUFFICIENT_FUNDS = "Insufficient funds.";
+    public static final String NOT_CREDIT_CARD = "This is not a credit card, but debit.";
 }

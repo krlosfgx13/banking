@@ -1,10 +1,8 @@
 package com.project.banking;
 
 import com.flextrade.jfixture.JFixture;
-import com.project.banking.enumerator.CardType;
-import com.project.banking.model.BankAccount;
-import com.project.banking.model.CardCategory;
-import com.project.banking.model.CardTransaction;
+import com.project.banking.enumerator.CardTypeEnum;
+import com.project.banking.model.*;
 import com.project.banking.repository.BankAccountRepository;
 import com.project.banking.repository.CardRepository;
 import com.project.banking.repository.CardTransactionRepository;
@@ -18,8 +16,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import com.project.banking.model.Card;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -87,7 +83,7 @@ public class BankingTests {
 
         //Assert
         assertEquals(MessageConstants.FAILED, response.getStatus());
-        assertEquals(MessageConstants.INACTIVE_OR_INVALID_CARD, response.getMessage());
+        assertEquals(MessageConstants.INACTIVE_OR_EXPIRED_CARD, response.getMessage());
     }
 
     @Test
@@ -113,7 +109,7 @@ public class BankingTests {
 
         //Assert
         assertEquals(MessageConstants.FAILED, response.getStatus());
-        assertEquals(MessageConstants.INACTIVE_OR_INVALID_CARD, response.getMessage());
+        assertEquals(MessageConstants.INACTIVE_OR_EXPIRED_CARD, response.getMessage());
     }
 
     @Test
@@ -121,7 +117,7 @@ public class BankingTests {
     public void processSuccessfulCreditCardPayment() {
         var fixture = new JFixture();
         var cardNumber = fixture.create(String.class);
-        var cardType = CardType.CREDIT.getName();
+        var cardType = CardTypeEnum.CREDIT.getName();
 
         var request = CardTransactionRequest.builder()
                 .cardNumber(cardNumber)
@@ -160,7 +156,7 @@ public class BankingTests {
     public void processCreditCardPaymentWithInsufficientCredit() {
         var fixture = new JFixture();
         var cardNumber = fixture.create(String.class);
-        var cardType = CardType.CREDIT.getName();
+        var cardType = CardTypeEnum.CREDIT.getName();
 
         var request = CardTransactionRequest.builder()
                 .cardNumber(cardNumber)
@@ -197,7 +193,7 @@ public class BankingTests {
     public void processSuccessfulDebitCardPayment() {
         var fixture = new JFixture();
         var cardNumber = fixture.create(String.class);
-        var cardType = CardType.DEBIT.getName();
+        var cardType = CardTypeEnum.DEBIT.getName();
 
         var request = CardTransactionRequest.builder()
                 .cardNumber(cardNumber)
@@ -233,7 +229,7 @@ public class BankingTests {
     public void processUnSuccessfulDebitCardPaymentWithNonExistentBankAccount() {
         var fixture = new JFixture();
         var cardNumber = fixture.create(String.class);
-        var cardType = CardType.DEBIT.getName();
+        var cardType = CardTypeEnum.DEBIT.getName();
 
         var request = CardTransactionRequest.builder()
                 .cardNumber(cardNumber)
@@ -262,7 +258,7 @@ public class BankingTests {
     public void processDebitCardPaymentWithInsufficientFunds() {
         var fixture = new JFixture();
         var cardNumber = fixture.create(String.class);
-        var cardType = CardType.DEBIT.getName();
+        var cardType = CardTypeEnum.DEBIT.getName();
 
         var request = CardTransactionRequest.builder()
                 .cardNumber(cardNumber)
@@ -330,5 +326,30 @@ public class BankingTests {
         assertEquals(2500, cardTransactionService.calculatePointAccumulation(blackCard, new BigDecimal("10000.00")));
     }
 
+    @Test
+    @DisplayName("Query reward amount of a credit card.")
+    public void queryCreditCardRewardAmount(){
+        var fixture = new JFixture();
+        var cardNumber = fixture.create(String.class);
 
+        var card = new Card();
+        card.setIsActive(true);
+        card.setExpirationDate(LocalDate.of(2028, 3, 31));
+        card.setCardType(CardType.builder()
+                .name("Credit")
+                .build());
+        card.setRewardAmount(10000);
+
+        //Arrange
+        when(cardRepository.findByCardNumber(any())).thenReturn(Optional.of(card));
+
+        //Act
+        var response = cardTransactionService.queryRewardAmount(cardNumber);
+
+        //Assert
+        assertEquals(MessageConstants.SUCCESS, response.getStatus());
+        assertEquals(MessageConstants.TRANSACTION_APPROVED, response.getMessage());
+        assertEquals(new BigDecimal("600.00"), response.getMoneyAmount());
+        assertEquals(10000, response.getRewardAmount());
+    }
 }

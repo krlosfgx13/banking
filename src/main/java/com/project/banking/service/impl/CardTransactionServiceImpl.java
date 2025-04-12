@@ -2,12 +2,15 @@ package com.project.banking.service.impl;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.project.banking.enumerator.CardTypeEnum;
 import com.project.banking.model.BankAccount;
 import com.project.banking.model.Card;
 import com.project.banking.model.CardTransaction;
+import com.project.banking.model.CardTransactionReward;
 import com.project.banking.repository.BankAccountRepository;
 import com.project.banking.repository.CardRepository;
 import com.project.banking.repository.CardTransactionRepository;
+import com.project.banking.repository.CardTransactionRewardRepository;
 import com.project.banking.request.CardTransactionRequest;
 import com.project.banking.response.BaseResponse;
 import com.project.banking.response.QueryRewardResponse;
@@ -29,6 +32,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -36,7 +40,7 @@ import java.util.Objects;
 import java.util.Optional;
 import okhttp3.*;
 
-import static com.project.banking.enumerator.CardType.CREDIT;
+import static com.project.banking.enumerator.CardTypeEnum.CREDIT;
 
 
 @Service
@@ -47,6 +51,7 @@ public class CardTransactionServiceImpl implements CardTransactionService {
     private final BankAccountRepository bankAccountRepository;
     private final CardTransactionRepository cardTransactionRepository;
     private final NamedParameterJdbcTemplate jdbcTemplate;
+    private final CardTransactionRewardRepository cardTransactionRewardRepository;
 
     @Override
     public BaseResponse processPayment(CardTransactionRequest request) {
@@ -72,13 +77,66 @@ public class CardTransactionServiceImpl implements CardTransactionService {
     }
 
     @Override
-    public BaseResponse processPaymentWithPoints(Card creditCard, BigDecimal transactionAmount) {
-        return null;
+    public BaseResponse processPaymentWithPoints(String cardNumber, BigDecimal transactionAmount) {
+        Optional<Card> optionalCard = cardRepository.findByCardNumber(cardNumber);
+
+        if (optionalCard.isEmpty())
+            return createResponse(MessageConstants.FAILED, MessageConstants.CARD_DOES_NOT_EXIST);
+
+        Card card = optionalCard.get();
+
+        if (!validateCardInfo(card))
+            return createResponse(MessageConstants.FAILED, MessageConstants.INACTIVE_OR_EXPIRED_CARD);
+
+        if(!card.getCardType().getName().equals(CardTypeEnum.CREDIT.getName()))
+            return createResponse(MessageConstants.FAILED, MessageConstants.NOT_CREDIT_CARD);
+
+        BigDecimal rewardMoneyAmount = rewardMoneyAmount(card.getRewardAmount());
+
+        if(transactionAmount.compareTo(rewardMoneyAmount) <= 0){
+            int transactionInRewardPoints = (int) (transactionAmount.intValue() * 0.06);
+            card.setRewardAmount(card.getRewardAmount() - transactionInRewardPoints);
+            cardRepository.save(card);
+            cardTransactionRewardRepository.save(CardTransactionReward.builder()
+                    .transactionAmount(transactionAmount)
+                    .rewardAmount(transactionInRewardPoints)
+                    .transactionDate(LocalDateTime.now())
+                    .build());
+
+            return BaseResponse.builder()
+                    .status(MessageConstants.SUCCESS)
+                    .message(MessageConstants.TRANSACTION_APPROVED)
+                    .build();
+        } else{
+            return BaseResponse.builder()
+                    .status(MessageConstants.FAILED)
+                    .message(MessageConstants.INSUFFICIENT_FUNDS)
+                    .build();
+        }
     }
 
     @Override
-    public QueryRewardResponse queryRewardAmount(Card card) {
-        return null;
+    public QueryRewardResponse queryRewardAmount(String cardNumber) {
+        Optional<Card> optionalCard = cardRepository.findByCardNumber(cardNumber);
+
+        if (optionalCard.isEmpty())
+            return (QueryRewardResponse) createResponse(MessageConstants.FAILED, MessageConstants.CARD_DOES_NOT_EXIST);
+
+        Card card = optionalCard.get();
+
+        if (!validateCardInfo(card))
+            return (QueryRewardResponse) createResponse(MessageConstants.FAILED, MessageConstants.INACTIVE_OR_EXPIRED_CARD);
+
+        if(!card.getCardType().getName().equals(CardTypeEnum.CREDIT.getName()))
+            return (QueryRewardResponse) createResponse(MessageConstants.FAILED, MessageConstants.NOT_CREDIT_CARD);
+
+        return QueryRewardResponse.builder()
+                .status(MessageConstants.SUCCESS)
+                .message(MessageConstants.TRANSACTION_APPROVED)
+                .cardNumber(cardNumber)
+                .rewardAmount(card.getRewardAmount())
+                .moneyAmount(rewardMoneyAmount(card.getRewardAmount()))
+                .build();
     }
 
     @Override
@@ -260,5 +318,10 @@ public class CardTransactionServiceImpl implements CardTransactionService {
                 .status(status)
                 .message(message)
                 .build();
+    }
+
+    private BigDecimal rewardMoneyAmount(int rewardAmount){
+        return new BigDecimal(rewardAmount)
+                .multiply(new BigDecimal(CardConstants.REWARD_VALUE)).setScale(2, RoundingMode.HALF_UP);
     }
 }

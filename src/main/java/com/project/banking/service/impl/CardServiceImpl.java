@@ -1,6 +1,6 @@
 package com.project.banking.service.impl;
 
-import com.project.banking.enumerator.CardType;
+import com.project.banking.enumerator.CardTypeEnum;
 import com.project.banking.exception.ValidateRequestException;
 import com.project.banking.model.BankAccount;
 import com.project.banking.model.Card;
@@ -14,7 +14,6 @@ import com.project.banking.utils.MessageConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -76,7 +75,7 @@ public class CardServiceImpl implements CardService, CardServiceTest {
                     .message("Credit card not active.")
                     .build();
 
-        if(card.getCardType().getName().equals(CardType.DEBIT.getName()))
+        if(card.getCardType().getName().equals(CardTypeEnum.DEBIT.getName()))
             return ValidationResponse
                     .builder()
                     .isValid(false)
