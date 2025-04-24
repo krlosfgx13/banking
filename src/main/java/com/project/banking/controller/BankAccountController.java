@@ -28,7 +28,7 @@ public class BankAccountController {
     public ResponseEntity<BaseResponse> processPayment(@RequestBody TransferMoneyRequest request){
         try{
             return new ResponseEntity<>(bankAccountService.transferMoney(
-                    bankAccountService.getBankAccount(request.getToBankAccountId()),
+                    bankAccountService.getBankAccount(request.getFromBankAccountId()),
                     bankAccountService.getBankAccount(request.getToBankAccountId()),
                     request.getAmountToTransfer()),
                     HttpStatus.OK);
