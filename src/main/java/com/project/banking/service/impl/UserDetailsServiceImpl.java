@@ -32,7 +32,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         List<GrantedAuthority> roleList = new ArrayList<>(List.of());
-        UserAccount userAccount = userAccountService.findUserAccountByUserName(username);
+        UserAccount userAccount = userAccountService.findUserAccountByUserNameModel(username);
         if (userAccount == null) {
             throw new UsernameNotFoundException("User Not Found with username: " + username);
         }

@@ -2,21 +2,21 @@ package com.project.banking.controller;
 
 import com.project.banking.exception.ValidateRequestException;
 import com.project.banking.model.CardTransaction;
-import com.project.banking.request.CardTransactionRequest;
-import com.project.banking.response.BaseResponse;
-import com.project.banking.response.QueryRewardResponse;
+import com.project.banking.dto.request.CardTransactionRequest;
+import com.project.banking.dto.response.BaseResponse;
+import com.project.banking.dto.response.QueryRewardResponse;
 import com.project.banking.serialization.CardTransactionsByUser;
 import com.project.banking.serialization.CompanyCategoryDetail;
 import com.project.banking.service.CardService;
 import com.project.banking.service.CardTransactionService;
 import com.project.banking.utils.MessageConstants;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDate;
@@ -30,9 +30,9 @@ import java.util.Objects;
 @RequestMapping("/api/banking")
 public class CardTransactionController {
 
-    private final Logger logger = LoggerFactory.getLogger(CardTransactionController.class);
     private final CardTransactionService cardTransactionService;
     private final CardService cardService;
+    private static final Logger logger = LoggerFactory.getLogger(CardTransactionController.class);
 
     //Just example. Should go on another project.
     @GetMapping("company/category")
@@ -53,14 +53,13 @@ public class CardTransactionController {
             return new ResponseEntity<>(cardTransactionService.processPayment(request), HttpStatus.OK);
 
         } catch (ValidateRequestException vre) {
-            logger.error(vre.getMessage());
+            vre.printStackTrace();
             return new ResponseEntity<>(BaseResponse
                     .builder()
                     .status(MessageConstants.FAILED)
                     .message(vre.getMessage())
                     .build(), HttpStatus.BAD_REQUEST);
         } catch (Exception ex){
-            logger.error(ex.getMessage());
             return new ResponseEntity<>(BaseResponse
                     .builder()
                     .status(MessageConstants.FAILED)
@@ -79,14 +78,16 @@ public class CardTransactionController {
                     HttpStatus.OK);
 
         } catch (ValidateRequestException vre) {
-            logger.error(vre.getMessage());
+//            logger.error(vre.getMessage());
+//            logger.error("Validation failed", vre);
             return new ResponseEntity<>(BaseResponse
                     .builder()
                     .status(MessageConstants.FAILED)
                     .message(MessageConstants.INVALID_REQUEST_DATA)
                     .build(), HttpStatus.BAD_REQUEST);
         } catch (Exception ex){
-            logger.error(ex.getMessage());
+            logger.error("CardTransactionController - error: {}", ex.getMessage());
+            logger.error("Exception details: ", ex);
             return new ResponseEntity<>(BaseResponse
                     .builder()
                     .status(MessageConstants.FAILED)
@@ -101,22 +102,18 @@ public class CardTransactionController {
             return new ResponseEntity<>(cardTransactionService.queryRewardAmount(cardNumber),
                     HttpStatus.OK);
         } catch (ValidateRequestException vre) {
-            logger.error(vre.getMessage());
             return new ResponseEntity<>(QueryRewardResponse
                     .builder()
                     .status(MessageConstants.FAILED)
                     .message(MessageConstants.INVALID_REQUEST_DATA)
                     .build(), HttpStatus.BAD_REQUEST);
         } catch (Exception ex){
-            logger.error(ex.getMessage());
             return new ResponseEntity<>(QueryRewardResponse
                     .builder()
                     .status(MessageConstants.FAILED)
                     .message(MessageConstants.UNEXPECTED_ERROR)
                     .build(), HttpStatus.FORBIDDEN);
         }
-
-        //return null;
     }
 
     @GetMapping("card/transaction/{id}")
@@ -124,7 +121,6 @@ public class CardTransactionController {
         try{
             return new ResponseEntity<>(cardTransactionService.getCardTransaction(id), HttpStatus.OK);
         } catch (Exception ex){
-            logger.error(ex.getMessage());
             return new ResponseEntity<>(CardTransaction.builder().build(), HttpStatus.NO_CONTENT);
         }
     }
@@ -134,7 +130,6 @@ public class CardTransactionController {
         try{
             return new ResponseEntity<>(cardTransactionService.getCardTransactions(), HttpStatus.OK);
         } catch (Exception ex){
-            logger.error(ex.getMessage());
             return new ResponseEntity<>(Collections.emptyList(), HttpStatus.NO_CONTENT);
         }
     }
@@ -146,7 +141,6 @@ public class CardTransactionController {
             LocalDateTime end = endDate.atTime(23, 59, 59);
             return new ResponseEntity<>(cardTransactionService.getCardTransactionByDateRange(start, end), HttpStatus.OK);
         } catch (Exception ex){
-            logger.error(ex.getMessage());
             return new ResponseEntity<>(Collections.emptyList(), HttpStatus.NO_CONTENT);
         }
     }
@@ -165,7 +159,6 @@ public class CardTransactionController {
                             endDate.atTime(23, 59, 59)),
                     HttpStatus.OK);
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
             return new ResponseEntity<>(Page.empty(), HttpStatus.NO_CONTENT);
         }
     }
@@ -175,7 +168,6 @@ public class CardTransactionController {
         try{
             return new ResponseEntity<>(cardTransactionService.getCardTransactionsByUser(userName), HttpStatus.OK);
         } catch (Exception ex){
-            logger.error(ex.getMessage());
             return new ResponseEntity<>(Collections.emptyList(), HttpStatus.NO_CONTENT);
         }
     }

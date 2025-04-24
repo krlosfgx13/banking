@@ -6,7 +6,7 @@ import com.project.banking.model.*;
 import com.project.banking.repository.BankAccountRepository;
 import com.project.banking.repository.CardRepository;
 import com.project.banking.repository.CardTransactionRepository;
-import com.project.banking.request.CardTransactionRequest;
+import com.project.banking.dto.request.CardTransactionRequest;
 import com.project.banking.service.impl.CardTransactionServiceImpl;
 import com.project.banking.utils.CardConstants;
 import com.project.banking.utils.MessageConstants;

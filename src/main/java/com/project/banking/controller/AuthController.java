@@ -1,5 +1,6 @@
 package com.project.banking.controller;
 
+import com.project.banking.exception.ValidateRequestException;
 import com.project.banking.model.Person;
 import com.project.banking.model.Role;
 import com.project.banking.model.UserAccount;
@@ -8,8 +9,8 @@ import com.project.banking.repository.PersonRepository;
 import com.project.banking.repository.RoleRepository;
 import com.project.banking.repository.UserAccountRepository;
 import com.project.banking.repository.UserRoleRepository;
-import com.project.banking.request.LoginRequest;
-import com.project.banking.request.SignUpRequest;
+import com.project.banking.dto.request.LoginRequest;
+import com.project.banking.dto.request.SignUpRequest;
 import com.project.banking.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -58,18 +59,20 @@ public class AuthController {
         return null;
     }
 
-//    @PostMapping("/login")
-//    public ResponseEntity<String> login(@RequestBody User user) {
-//        Authentication authentication = authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(
-//                        user.getUsername(),
-//                        user.getPassword()
-//                )
-//        );
-//
-//        String token = jwtUtil.generateToken(user.getUsername());
-//        return new ResponseEntity<>(token, HttpStatus.OK);
-//    }
+    @PutMapping("/changePassword/{id}")
+    public String changeUserPassword(@PathVariable Long id, @RequestBody UserAccount request){
+        try{
+            UserAccount user = userAccountRepository.findById(id).orElseThrow(() -> new ValidateRequestException("Entity not found"));
+
+            user.setPassword(encoder.encode(request.getPassword()));
+            userAccountRepository.save(user);
+            return "Password updated successfully.";
+
+        } catch (ValidateRequestException vre){
+            return "Invalid input.";
+        }
+    }
+
 
     @PostMapping("/signup")
     public String registerUser(@RequestBody SignUpRequest request) {
@@ -83,6 +86,11 @@ public class AuthController {
         }
 
         Person person = optionalPerson.get();
+
+        //if exists, should not have already an account.
+        //Add that pending validation here.
+        if(userAccountRepository.existsByPersonId(person.getId()))
+            return "Error: Person already has an account!";
 
         // Create new user's account
         UserAccount newUser = UserAccount.builder()

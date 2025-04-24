@@ -15,4 +15,5 @@ public abstract class MessageConstants {
     public static final String INSUFFICIENT_CREDIT = "Insufficient credit.";
     public static final String INSUFFICIENT_FUNDS = "Insufficient funds.";
     public static final String NOT_CREDIT_CARD = "This is not a credit card, but debit.";
+    public static final String OPERATION_PERFORMED_SUCCESSFULLY = "Operation performed successfully.";
 }

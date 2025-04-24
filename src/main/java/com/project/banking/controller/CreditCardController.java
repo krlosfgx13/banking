@@ -1,8 +1,8 @@
 package com.project.banking.controller;
 
 import com.project.banking.exception.ValidateRequestException;
-import com.project.banking.request.PayCreditCardRequest;
-import com.project.banking.response.BaseResponse;
+import com.project.banking.dto.request.PayCreditCardRequest;
+import com.project.banking.dto.response.BaseResponse;
 import com.project.banking.service.CardService;
 import com.project.banking.utils.MessageConstants;
 import lombok.RequiredArgsConstructor;

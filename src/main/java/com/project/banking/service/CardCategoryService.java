@@ -1,7 +1,7 @@
 package com.project.banking.service;
 
 import com.project.banking.model.CardCategory;
-import com.project.banking.request.CardCategoryRequest;
+import com.project.banking.dto.request.CardCategoryRequest;
 
 import java.util.List;
 import java.util.Optional;

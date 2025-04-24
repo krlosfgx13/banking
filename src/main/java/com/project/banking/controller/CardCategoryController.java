@@ -1,7 +1,7 @@
 package com.project.banking.controller;
 
 import com.project.banking.model.CardCategory;
-import com.project.banking.request.CardCategoryRequest;
+import com.project.banking.dto.request.CardCategoryRequest;
 import com.project.banking.service.CardCategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

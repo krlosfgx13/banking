@@ -1,8 +1,8 @@
 package com.project.banking.controller;
 
 import com.project.banking.exception.ValidateRequestException;
-import com.project.banking.request.TransferMoneyRequest;
-import com.project.banking.response.BaseResponse;
+import com.project.banking.dto.request.TransferMoneyRequest;
+import com.project.banking.dto.response.BaseResponse;
 import com.project.banking.service.BankAccountService;
 import com.project.banking.utils.MessageConstants;
 import lombok.RequiredArgsConstructor;

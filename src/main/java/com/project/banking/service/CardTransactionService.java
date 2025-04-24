@@ -2,9 +2,9 @@ package com.project.banking.service;
 
 import com.project.banking.model.Card;
 import com.project.banking.model.CardTransaction;
-import com.project.banking.request.CardTransactionRequest;
-import com.project.banking.response.BaseResponse;
-import com.project.banking.response.QueryRewardResponse;
+import com.project.banking.dto.request.CardTransactionRequest;
+import com.project.banking.dto.response.BaseResponse;
+import com.project.banking.dto.response.QueryRewardResponse;
 import com.project.banking.serialization.CardTransactionsByUser;
 import com.project.banking.serialization.CompanyCategoryDetail;
 import org.springframework.data.domain.Page;

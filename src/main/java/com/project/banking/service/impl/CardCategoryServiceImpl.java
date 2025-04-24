@@ -2,7 +2,7 @@ package com.project.banking.service.impl;
 
 import com.project.banking.model.CardCategory;
 import com.project.banking.repository.CardCategoryRepository;
-import com.project.banking.request.CardCategoryRequest;
+import com.project.banking.dto.request.CardCategoryRequest;
 import com.project.banking.service.CardCategoryService;
 import org.springframework.stereotype.Service;
 

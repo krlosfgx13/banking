@@ -32,6 +32,7 @@ public class WebSecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
+    //When used in another classes this method will be injected returning an instance of BCryptoPasswordEncoder.
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

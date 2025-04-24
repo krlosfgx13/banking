@@ -11,15 +11,18 @@ import com.project.banking.repository.BankAccountRepository;
 import com.project.banking.repository.CardRepository;
 import com.project.banking.repository.CardTransactionRepository;
 import com.project.banking.repository.CardTransactionRewardRepository;
-import com.project.banking.request.CardTransactionRequest;
-import com.project.banking.response.BaseResponse;
-import com.project.banking.response.QueryRewardResponse;
+import com.project.banking.dto.request.CardTransactionRequest;
+import com.project.banking.dto.response.BaseResponse;
+import com.project.banking.dto.response.QueryRewardResponse;
 import com.project.banking.serialization.CardTransactionsByUser;
 import com.project.banking.serialization.CompanyCategoryDetail;
 import com.project.banking.service.CardTransactionService;
 import com.project.banking.utils.CardConstants;
 import com.project.banking.utils.MessageConstants;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -52,6 +55,7 @@ public class CardTransactionServiceImpl implements CardTransactionService {
     private final CardTransactionRepository cardTransactionRepository;
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final CardTransactionRewardRepository cardTransactionRewardRepository;
+    private static final Logger logger = LoggerFactory.getLogger(CardTransactionServiceImpl.class);
 
     @Override
     public BaseResponse processPayment(CardTransactionRequest request) {
@@ -76,8 +80,10 @@ public class CardTransactionServiceImpl implements CardTransactionService {
             return debitCardPayment(card, request);
     }
 
+    @Transactional
     @Override
     public BaseResponse processPaymentWithPoints(String cardNumber, BigDecimal transactionAmount) {
+        logger.info("Starting processPaymentWithPoints() method.");
         Optional<Card> optionalCard = cardRepository.findByCardNumber(cardNumber);
 
         if (optionalCard.isEmpty())
@@ -94,10 +100,11 @@ public class CardTransactionServiceImpl implements CardTransactionService {
         BigDecimal rewardMoneyAmount = rewardMoneyAmount(card.getRewardAmount());
 
         if(transactionAmount.compareTo(rewardMoneyAmount) <= 0){
-            int transactionInRewardPoints = (int) (transactionAmount.intValue() * 0.06);
+            int transactionInRewardPoints = (int) (transactionAmount.intValue() * 16.66);
             card.setRewardAmount(card.getRewardAmount() - transactionInRewardPoints);
             cardRepository.save(card);
             cardTransactionRewardRepository.save(CardTransactionReward.builder()
+                    .card(card) //test: if commented out without @Transactional, it misbehaves. no atomic transaction.
                     .transactionAmount(transactionAmount)
                     .rewardAmount(transactionInRewardPoints)
                     .transactionDate(LocalDateTime.now())

@@ -1,4 +1,4 @@
-package com.project.banking.response;
+package com.project.banking.dto.response;
 
 import lombok.*;
 import lombok.experimental.SuperBuilder;

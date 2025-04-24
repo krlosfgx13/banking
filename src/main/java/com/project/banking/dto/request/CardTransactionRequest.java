@@ -1,4 +1,4 @@
-package com.project.banking.request;
+package com.project.banking.dto.request;
 
 import lombok.*;
 

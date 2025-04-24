@@ -1,8 +1,11 @@
 package com.project.banking.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+
 import java.time.LocalDateTime;
 
+@Getter
 @Entity
 @Table(name = "person")
 public class Person {
