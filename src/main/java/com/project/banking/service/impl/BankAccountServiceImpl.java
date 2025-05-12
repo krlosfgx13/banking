@@ -1,22 +1,71 @@
 package com.project.banking.service.impl;
 
+import com.project.banking.dto.request.CreateBankAccountRequest;
 import com.project.banking.exception.ValidateRequestException;
 import com.project.banking.model.BankAccount;
+import com.project.banking.model.BankAccountCategory;
+import com.project.banking.model.BankAccountType;
+import com.project.banking.model.Person;
+import com.project.banking.repository.BankAccountCategoryRepository;
 import com.project.banking.repository.BankAccountRepository;
 import com.project.banking.dto.response.BaseResponse;
 import com.project.banking.dto.response.ValidationResponse;
+import com.project.banking.repository.BankAccountTypeRepository;
+import com.project.banking.repository.PersonRepository;
 import com.project.banking.service.BankAccountService;
 import com.project.banking.utils.MessageConstants;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
+
+import static com.project.banking.utils.MessageConstants.*;
 
 @Service
 @RequiredArgsConstructor
 public class BankAccountServiceImpl implements BankAccountService {
 
     private final BankAccountRepository bankAccountRepository;
+    private final BankAccountTypeRepository bankAccountTypeRepository;
+    private final BankAccountCategoryRepository bankAccountCategoryRepository;
+    private final PersonRepository personRepository;
+
+    @Override
+    public BaseResponse createBankAccount(CreateBankAccountRequest request) {
+        long lastBankAccountNumber = Long.parseLong(bankAccountRepository.getLastBankAccountNumber());
+        long newBankAccountNumber = lastBankAccountNumber + 1;
+
+        BankAccountType bankAccountType = bankAccountTypeRepository.findById(request.getBankAccountType())
+                .orElseThrow(() -> new ValidateRequestException(ENTITY_NOT_FOUND));
+
+        BankAccountCategory bankAccountCategory = bankAccountCategoryRepository.findById(request.getBankAccountCategory())
+                .orElseThrow(() -> new ValidateRequestException(ENTITY_NOT_FOUND));
+
+        Person person = personRepository.findById(request.getPersonId())
+                .orElseThrow(() -> new ValidateRequestException(ENTITY_NOT_FOUND));
+
+        BankAccount bankAccount = BankAccount.builder()
+                .accountNumber(String.valueOf(newBankAccountNumber))
+                .balance(request.getInitialBalance())
+                .bankAccountType(bankAccountType)
+                .bankAccountCategory(bankAccountCategory)
+                .person(person)
+                .createdDate(LocalDateTime.now())
+                .isActive(true)
+                .build();
+
+        bankAccountRepository.save(bankAccount);
+
+        return BaseResponse.builder()
+                .status(SUCCESS)
+                .message(OPERATION_PERFORMED_SUCCESSFULLY)
+                .build();
+    }
 
     @Override
     public BaseResponse transferMoney(BankAccount fromBankAccount, BankAccount toBankAccount, BigDecimal amountToTransfer){
@@ -29,14 +78,48 @@ public class BankAccountServiceImpl implements BankAccountService {
         toBankAccount.setBalance(toBankAccount.getBalance().add(amountToTransfer));
 
         return BaseResponse.builder()
-                .status(MessageConstants.SUCCESS)
+                .status(SUCCESS)
                 .message(MessageConstants.TRANSACTION_APPROVED)
                 .build();
     }
 
     @Override
-    public BankAccount getBankAccount(Long id) {
-        return bankAccountRepository.findById(id).orElseThrow(() -> new ValidateRequestException("Entity not found"));
+    public BankAccount getBankAccountById(Long id) {
+        return bankAccountRepository.findById(id).orElseThrow(() -> new ValidateRequestException(ENTITY_NOT_FOUND));
+    }
+
+    @Override
+    public List<BankAccount> getAllBankAccounts() {
+        return bankAccountRepository.findAll();
+    }
+
+    @Override
+    public Page<BankAccount> getBankAccountsPage(Pageable pageable) {
+        return bankAccountRepository.findAll(pageable);
+    }
+
+    @Override
+    public BaseResponse updateBankAccount(Long id, BankAccount request) {
+        BankAccount bankAccount = bankAccountRepository.findById(id).orElseThrow(() -> new ValidateRequestException(ENTITY_NOT_FOUND));
+        bankAccount.setBalance(Objects.isNull(request.getBalance()) ? bankAccount.getBalance() : request.getBalance());
+        bankAccount.setCard(Objects.isNull(request.getCard()) ? bankAccount.getCard() : request.getCard());
+        bankAccount.setIsActive(Objects.isNull(request.getIsActive()) ? bankAccount.getIsActive() : request.getIsActive());
+        bankAccountRepository.save(bankAccount);
+
+        return BaseResponse.builder()
+                .status(SUCCESS)
+                .message(OPERATION_PERFORMED_SUCCESSFULLY)
+                .build();
+    }
+
+    @Override
+    public BaseResponse deleteBankAccount(Long id) {
+        BankAccount bankAccount = bankAccountRepository.findById(id).orElseThrow(() -> new ValidateRequestException(ENTITY_NOT_FOUND));
+        bankAccountRepository.delete(bankAccount);
+        return BaseResponse.builder()
+                .status(SUCCESS)
+                .message(OPERATION_PERFORMED_SUCCESSFULLY)
+                .build();
     }
 
     private ValidationResponse validate(BankAccount fromBankAccount, BankAccount toBankAccount, BigDecimal amountToTransfer){
@@ -44,21 +127,21 @@ public class BankAccountServiceImpl implements BankAccountService {
             return ValidationResponse
                     .builder()
                     .isValid(false)
-                    .message("Insufficient funds.")
+                    .message(INSUFFICIENT_FUNDS)
                     .build();
 
         if(!fromBankAccount.getIsActive())
             return ValidationResponse
                     .builder()
                     .isValid(false)
-                    .message("Source account is not active.")
+                    .message(SOURCE_ACCOUNT_INACTIVE)
                     .build();
 
         if(!toBankAccount.getIsActive())
             return ValidationResponse
                     .builder()
                     .isValid(false)
-                    .message("Target account is not active.")
+                    .message(TARGET_ACCOUNT_INACTIVE)
                     .build();
 
         return ValidationResponse

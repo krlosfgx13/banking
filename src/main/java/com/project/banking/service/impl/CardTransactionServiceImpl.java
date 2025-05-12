@@ -202,8 +202,8 @@ public class CardTransactionServiceImpl implements CardTransactionService {
                 "where u.user_name = :userName\n" +
                 "order by ct.transaction_date desc";
         SqlParameterSource params = new MapSqlParameterSource("userName", userName);
-        List<CardTransactionsByUser> listOfTransactions = jdbcTemplate.query(selectStatement, params, new BeanPropertyRowMapper<>(CardTransactionsByUser.class));
-        return listOfTransactions;
+        return jdbcTemplate.query(selectStatement, params,
+                new BeanPropertyRowMapper<>(CardTransactionsByUser.class));
     }
 
     @Override

@@ -16,4 +16,7 @@ public abstract class MessageConstants {
     public static final String INSUFFICIENT_FUNDS = "Insufficient funds.";
     public static final String NOT_CREDIT_CARD = "This is not a credit card, but debit.";
     public static final String OPERATION_PERFORMED_SUCCESSFULLY = "Operation performed successfully.";
+    public static final String ENTITY_NOT_FOUND = "Entity not found.";
+    public static final String SOURCE_ACCOUNT_INACTIVE = "Source account is not active.";
+    public static final String TARGET_ACCOUNT_INACTIVE = "Target account is not active.";
 }

@@ -16,8 +16,8 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
     @Query("SELECT p FROM Person p WHERE p.firstName = :firstName AND p.lastName = :lastName")
     List<Person> findPersonsByFirstAndLastName(@Param("firstName") String firstName, @Param("lastName") String lastName);
 
-    @Query("SELECT p FROM Person p WHERE p.firstName = :firstName AND p.lastName = :lastName")
-    Page<Person> findPersonsByFirstAndLastNamePage(@Param("firstName") String firstName, @Param("lastName") String lastName);
+//    @Query("SELECT p FROM Person p WHERE p.firstName = :firstName AND p.lastName = :lastName")
+//    Page<Person> findPersonsByFirstAndLastNamePage(@Param("firstName") String firstName, @Param("lastName") String lastName);
 
     Optional<Person> findByDpi(String dpi);
 }

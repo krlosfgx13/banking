@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.project.banking.utils.MessageConstants.ENTITY_NOT_FOUND;
+
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -62,7 +64,7 @@ public class AuthController {
     @PutMapping("/changePassword/{id}")
     public String changeUserPassword(@PathVariable Long id, @RequestBody UserAccount request){
         try{
-            UserAccount user = userAccountRepository.findById(id).orElseThrow(() -> new ValidateRequestException("Entity not found"));
+            UserAccount user = userAccountRepository.findById(id).orElseThrow(() -> new ValidateRequestException(ENTITY_NOT_FOUND));
 
             user.setPassword(encoder.encode(request.getPassword()));
             userAccountRepository.save(user);
