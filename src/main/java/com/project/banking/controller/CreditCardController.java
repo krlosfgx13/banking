@@ -3,6 +3,7 @@ package com.project.banking.controller;
 import com.project.banking.exception.ValidateRequestException;
 import com.project.banking.dto.request.PayCreditCardRequest;
 import com.project.banking.dto.response.BaseResponse;
+import com.project.banking.service.BankAccountService;
 import com.project.banking.service.CardService;
 import com.project.banking.utils.MessageConstants;
 import lombok.RequiredArgsConstructor;
@@ -21,13 +22,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class CreditCardController {
 
     private final CardService cardService;
+    private final BankAccountService bankAccountService;
     private final Logger logger = LoggerFactory.getLogger(CreditCardController.class);
 
     @PostMapping("card/payment")
     public ResponseEntity<BaseResponse> processPayment(@RequestBody PayCreditCardRequest request){
         try{
             return new ResponseEntity<>(cardService.payCreditCard(
-                    cardService.getBankAccount(request.getBankAccountId()),
+                    bankAccountService.getBankAccountById(request.getBankAccountId()),
                     cardService.getCreditCard(request.getCreditCardId()),
                     request.getAmountToPay()),
                     HttpStatus.OK);

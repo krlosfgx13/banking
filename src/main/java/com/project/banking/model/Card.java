@@ -51,10 +51,10 @@ public class Card {
     private Short pin;
 
     @Column(name = "cutoff_date")
-    private LocalDate cutoffDate;
+    private int cutoffDate;
 
     @Column(name = "payment_date")
-    private LocalDate paymentDate;
+    private int paymentDate;
 
     @Column(name = "credit_limit", precision = 6, scale = 2)
     private BigDecimal creditLimit;

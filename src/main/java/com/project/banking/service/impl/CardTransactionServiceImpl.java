@@ -44,6 +44,7 @@ import java.util.Optional;
 import okhttp3.*;
 
 import static com.project.banking.enumerator.CardTypeEnum.CREDIT;
+import static com.project.banking.utils.MessageConstants.POINT_CONVERSION;
 
 
 @Service
@@ -100,7 +101,7 @@ public class CardTransactionServiceImpl implements CardTransactionService {
         BigDecimal rewardMoneyAmount = rewardMoneyAmount(card.getRewardAmount());
 
         if(transactionAmount.compareTo(rewardMoneyAmount) <= 0){
-            int transactionInRewardPoints = (int) (transactionAmount.intValue() * 16.66);
+            int transactionInRewardPoints = (int) (transactionAmount.intValue() * POINT_CONVERSION);
             card.setRewardAmount(card.getRewardAmount() - transactionInRewardPoints);
             cardRepository.save(card);
             cardTransactionRewardRepository.save(CardTransactionReward.builder()

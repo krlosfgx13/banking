@@ -96,7 +96,7 @@ public class BankAccountController {
         }
     }
 
-    @PutMapping
+    @PutMapping("/bank/account/{id}")
     public ResponseEntity<BaseResponse> updateBankAccount(Long id, @RequestBody BankAccount request){
         try{
             return ResponseEntity.ok(bankAccountService.updateBankAccount(id, request));
@@ -119,7 +119,7 @@ public class BankAccountController {
         }
     }
 
-    @DeleteMapping
+    @DeleteMapping("/bank/account/{id}")
     public ResponseEntity<BaseResponse> deleteBankAccount(Long id){
         try{
             return ResponseEntity.ok(bankAccountService.deleteBankAccount(id));

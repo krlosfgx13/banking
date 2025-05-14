@@ -13,7 +13,9 @@ import com.project.banking.dto.response.ValidationResponse;
 import com.project.banking.repository.BankAccountTypeRepository;
 import com.project.banking.repository.PersonRepository;
 import com.project.banking.service.BankAccountService;
+import com.project.banking.service.CardService;
 import com.project.banking.utils.MessageConstants;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -34,7 +36,9 @@ public class BankAccountServiceImpl implements BankAccountService {
     private final BankAccountTypeRepository bankAccountTypeRepository;
     private final BankAccountCategoryRepository bankAccountCategoryRepository;
     private final PersonRepository personRepository;
+    private final CardService cardService;
 
+    @Transactional
     @Override
     public BaseResponse createBankAccount(CreateBankAccountRequest request) {
         long lastBankAccountNumber = Long.parseLong(bankAccountRepository.getLastBankAccountNumber());
@@ -58,6 +62,8 @@ public class BankAccountServiceImpl implements BankAccountService {
                 .createdDate(LocalDateTime.now())
                 .isActive(true)
                 .build();
+
+        //create debit card for checking bank accounts here.
 
         bankAccountRepository.save(bankAccount);
 

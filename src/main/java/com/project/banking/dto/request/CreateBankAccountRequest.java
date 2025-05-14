@@ -11,7 +11,8 @@ import java.math.BigDecimal;
 @Setter
 public class CreateBankAccountRequest {
     private BigDecimal initialBalance;
-    private long bankAccountType;
-    private long bankAccountCategory;
-    private long personId;
+    private int bankAccountType;
+    private int bankAccountCategory;
+    private int personId;
+    private int cardNetworkId;
 }

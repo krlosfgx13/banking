@@ -106,7 +106,7 @@ public class PersonController {
         }
     }
 
-    @PutMapping
+    @PutMapping("/person/{id}")
     public ResponseEntity<BaseResponse> updatePerson(Long id, @RequestBody Person request){
         try{
             return ResponseEntity.ok(personService.updatePerson(id, request));
@@ -129,7 +129,7 @@ public class PersonController {
         }
     }
 
-    @DeleteMapping
+    @DeleteMapping("/person/{id}")
     public ResponseEntity<BaseResponse> deletePerson(Long id){
         try{
             return ResponseEntity.ok(personService.deletePerson(id));

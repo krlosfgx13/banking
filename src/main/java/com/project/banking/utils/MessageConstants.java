@@ -4,6 +4,7 @@ public abstract class MessageConstants {
 
     public static final String SUCCESS_MESSAGE = "";
     public static final String FAILED_MESSAGE = "";
+    public static final double POINT_CONVERSION = 16.66;
     public static final String SUCCESS = "SUCCESS";
     public static final String FAILED = "FAILED";
     public static final String UNEXPECTED_ERROR = "Unexpected error.";
