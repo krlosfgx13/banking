@@ -6,7 +6,6 @@ import com.project.banking.dto.request.TransferMoneyRequest;
 import com.project.banking.dto.response.BaseResponse;
 import com.project.banking.model.BankAccount;
 import com.project.banking.service.BankAccountService;
-import com.project.banking.utils.MessageConstants;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,7 +77,7 @@ public class BankAccountController {
     }
 
     @GetMapping("/bank/accounts/page")
-    public ResponseEntity<Page<BankAccount>> getAllPeoplePage(
+    public ResponseEntity<Page<BankAccount>> getAllBankAccountsPage(
             @RequestParam(name = "pageNo") int pageNo,
             @RequestParam(name = "pageSize") int pageSize){
         try {
@@ -98,7 +97,7 @@ public class BankAccountController {
     }
 
     @PutMapping
-    public ResponseEntity<BaseResponse> updatePerson(Long id, @RequestBody BankAccount request){
+    public ResponseEntity<BaseResponse> updateBankAccount(Long id, @RequestBody BankAccount request){
         try{
             return ResponseEntity.ok(bankAccountService.updateBankAccount(id, request));
         } catch (ValidateRequestException vre) {
@@ -121,7 +120,7 @@ public class BankAccountController {
     }
 
     @DeleteMapping
-    public ResponseEntity<BaseResponse> deletePerson(Long id){
+    public ResponseEntity<BaseResponse> deleteBankAccount(Long id){
         try{
             return ResponseEntity.ok(bankAccountService.deleteBankAccount(id));
         } catch (ValidateRequestException vre) {
