@@ -20,4 +20,7 @@ public abstract class MessageConstants {
     public static final String ENTITY_NOT_FOUND = "Entity not found.";
     public static final String SOURCE_ACCOUNT_INACTIVE = "Source account is not active.";
     public static final String TARGET_ACCOUNT_INACTIVE = "Target account is not active.";
+    public static final String INACTIVE_CARD = "Card is not active.";
+    public static final String INVALID_CARD_TYPE = "This is not a credit card, but debit.";
+    public static final String UNSUPPORTED_CARD_TYPE = "Unsupported card type";
 }

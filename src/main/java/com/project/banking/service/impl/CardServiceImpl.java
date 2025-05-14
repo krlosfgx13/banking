@@ -1,31 +1,97 @@
 package com.project.banking.service.impl;
 
+import com.project.banking.dto.request.CreateCreditCardRequest;
+import com.project.banking.enumerator.CardCategoryEnum;
 import com.project.banking.enumerator.CardNetworkEnum;
 import com.project.banking.enumerator.CardTypeEnum;
 import com.project.banking.exception.ValidateRequestException;
-import com.project.banking.model.BankAccount;
-import com.project.banking.model.Card;
-import com.project.banking.repository.BankAccountRepository;
-import com.project.banking.repository.CardRepository;
+import com.project.banking.model.*;
+import com.project.banking.repository.*;
 import com.project.banking.dto.response.BaseResponse;
 import com.project.banking.dto.response.ValidationResponse;
 import com.project.banking.service.CardService;
 import com.project.banking.service.CardServiceTest;
 import com.project.banking.utils.MessageConstants;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+
+import static com.project.banking.utils.MessageConstants.*;
 
 @Service
 @RequiredArgsConstructor
 public class CardServiceImpl implements CardService, CardServiceTest {
 
     private final CardRepository cardRepository;
+    private final PersonRepository personRepository;
+    private final CardNetworkRepository cardNetworkRepository;
+    private final CardTypeRepository cardTypeRepository;
+    private final CardCategoryRepository cardCategoryRepository;
+    private final RewardProgramRepository rewardProgramRepository;
 
     @Override
-    public BaseResponse createCard(CardTypeEnum cardType) {
-        return null;
+    public void createDebitCard(CardNetworkEnum cardNetwork, String cardName, long personId) {
+        /*
+        * Handle custom date example
+            Calendar startCalendar = new GregorianCalendar();
+            startCalendar.set(Calendar.YEAR, Integer.parseInt(value));
+            startCalendar.set(Calendar.MONTH, i);
+            startCalendar.set(Calendar.DAY_OF_MONTH, 1);
+
+            Calendar endCalendar = new GregorianCalendar();
+            endCalendar.set(Calendar.YEAR, Integer.parseInt(value));
+            endCalendar.set(Calendar.MONTH, i);
+            endCalendar.set(Calendar.DAY_OF_MONTH, endCalendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+
+            LocalDate startDate = LocalDate.ofInstant(startCalendar.toInstant(), ZoneId.systemDefault());
+            LocalDate endDate = LocalDate.ofInstant(endCalendar.toInstant(), ZoneId.systemDefault());
+        * */
+        CardType cardType = cardTypeRepository.findById(CardTypeEnum.DEBIT.getId())
+                .orElseThrow(() -> new ValidateRequestException(ENTITY_NOT_FOUND));
+
+        CardCategory cardCategory = cardCategoryRepository.findById(CardCategoryEnum.CLASSIC.getId())
+                .orElseThrow(() -> new ValidateRequestException(ENTITY_NOT_FOUND));
+
+        Card card = createCard(cardNetwork, cardName, personId);
+        card.setExpirationDate(LocalDate.now().plusYears(4));
+        card.setCardType(cardType);
+        card.setCardCategory(cardCategory);
+        cardRepository.save(card);
+    }
+
+    @Override
+    public BaseResponse createCreditCard(CreateCreditCardRequest request, CardNetworkEnum cardNetwork) {
+        CardType cardType = cardTypeRepository.findById(CardTypeEnum.CREDIT.getId())
+                .orElseThrow(() -> new ValidateRequestException(ENTITY_NOT_FOUND));
+
+        CardCategory cardCategory = cardCategoryRepository.findById(request.getCardCategoryId())
+                .orElseThrow(() -> new ValidateRequestException(ENTITY_NOT_FOUND));
+
+        RewardProgram rewardProgram = rewardProgramRepository.findById(request.getRewardProgramId())
+                .orElseThrow(() -> new ValidateRequestException(ENTITY_NOT_FOUND));
+
+        Card card = createCard(cardNetwork, request.getCardName(), request.getPersonId());
+        card.setExpirationDate(request.getExpirationDate());
+        card.setCardType(cardType);
+        card.setCardCategory(cardCategory);
+        card.setCutoffDate(request.getCutoffDate());
+        card.setPaymentDate(request.getPaymentDate());
+        card.setCreditLimit(request.getCreditLimit());
+        card.setCreditUsed(new BigDecimal("0.00"));
+        card.setRewardProgram(rewardProgram);
+        card.setRewardAmount(request.getRewardAmount());
+        cardRepository.save(card);
+
+        return BaseResponse.builder()
+                .status(MessageConstants.SUCCESS)
+                .message(MessageConstants.OPERATION_PERFORMED_SUCCESSFULLY)
+                .build();
     }
 
     @Override
@@ -45,13 +111,54 @@ public class CardServiceImpl implements CardService, CardServiceTest {
     }
 
     @Override
-    public Card getCreditCard(Long id) {
-        return cardRepository.findById(id).orElseThrow(() -> new ValidateRequestException("Entity not found"));
+    public Card getCardById(Long id) {
+        return cardRepository.findById(id)
+                .orElseThrow(() -> new ValidateRequestException(ENTITY_NOT_FOUND));
     }
 
     @Override
     public Card getCardByNumber(String cardNumber) {
-        return cardRepository.findByCardNumber(cardNumber).orElseThrow(() -> new ValidateRequestException("Entity not found"));
+        return cardRepository.findByCardNumber(cardNumber)
+                .orElseThrow(() -> new ValidateRequestException(ENTITY_NOT_FOUND));
+    }
+
+    @Override
+    public List<Card> getAllCards() {
+        return cardRepository.findAll();
+    }
+
+    @Override
+    public Page<Card> getAllCardsPage(Pageable pageable) {
+        return cardRepository.findAll(pageable);
+    }
+
+    @Override
+    public BaseResponse updateCard(Long id, Card request) {
+        Card card = cardRepository.findById(id)
+                .orElseThrow(() -> new ValidateRequestException(ENTITY_NOT_FOUND));
+
+        card.setCutoffDate(request.getCutoffDate());
+        card.setPaymentDate(request.getPaymentDate());
+        card.setCreditLimit(request.getCreditLimit());
+        card.setIsActive(request.getIsActive());
+        cardRepository.save(card);
+
+        return BaseResponse.builder()
+                .status(SUCCESS)
+                .message(OPERATION_PERFORMED_SUCCESSFULLY)
+                .build();
+    }
+
+    @Override
+    public BaseResponse deleteCard(Long id) {
+        Card card = cardRepository.findById(id)
+                .orElseThrow(() -> new ValidateRequestException(ENTITY_NOT_FOUND));
+        cardRepository.delete(card);
+
+        return BaseResponse.builder()
+                .status(SUCCESS)
+                .message(OPERATION_PERFORMED_SUCCESSFULLY)
+                .build();
     }
 
     private ValidationResponse validate(BankAccount bankAccount, Card card, BigDecimal amountToPay){
@@ -59,28 +166,28 @@ public class CardServiceImpl implements CardService, CardServiceTest {
             return ValidationResponse
                     .builder()
                     .isValid(false)
-                    .message("Insufficient funds.")
+                    .message(INSUFFICIENT_FUNDS)
                     .build();
 
         if(!bankAccount.getIsActive())
             return ValidationResponse
                     .builder()
                     .isValid(false)
-                    .message("Source account is not active.")
+                    .message(SOURCE_ACCOUNT_INACTIVE)
                     .build();
 
         if(!card.getIsActive())
             return ValidationResponse
                     .builder()
                     .isValid(false)
-                    .message("Credit card not active.")
+                    .message(INACTIVE_CARD)
                     .build();
 
         if(card.getCardType().getName().equals(CardTypeEnum.DEBIT.getName()))
             return ValidationResponse
                     .builder()
                     .isValid(false)
-                    .message("This is not a credit card, but debit.")
+                    .message(INVALID_CARD_TYPE)
                     .build();
 
         return ValidationResponse
@@ -90,7 +197,26 @@ public class CardServiceImpl implements CardService, CardServiceTest {
                 .build();
     }
 
-    public static String generateCardNumber(CardNetworkEnum network) {
+    private Card createCard(CardNetworkEnum cardNetwork, String cardName, long personId){
+        Person person = personRepository.findById(personId).orElseThrow(() -> new ValidateRequestException(ENTITY_NOT_FOUND));
+        CardNetwork network = cardNetworkRepository.findById(cardNetwork.getId())
+                .orElseThrow(() -> new ValidateRequestException(ENTITY_NOT_FOUND));
+
+        short cvv = (short) ThreadLocalRandom.current().nextInt(100, 1000);
+        short pin = (short) ThreadLocalRandom.current().nextInt(1000, 10000);
+
+        return Card.builder()
+                .cardNumber(generateCardNumber(cardNetwork))
+                .cardName(cardName)
+                .person(person)
+                .cvv(cvv)
+                .cardNetwork(network)
+                .pin(pin)
+                .isActive(true)
+                .build();
+    }
+
+    private static String generateCardNumber(CardNetworkEnum network) {
         int length = 16;
         String prefix;
         Random random = new Random();
@@ -105,7 +231,7 @@ public class CardServiceImpl implements CardService, CardServiceTest {
                 prefix = String.valueOf(prefixes[random.nextInt(prefixes.length)]);
                 break;
             default:
-                throw new IllegalArgumentException("Unsupported card type");
+                throw new IllegalArgumentException(UNSUPPORTED_CARD_TYPE);
         }
 
         // Generate the card number without the last digit

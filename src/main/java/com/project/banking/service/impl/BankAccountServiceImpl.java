@@ -1,6 +1,7 @@
 package com.project.banking.service.impl;
 
 import com.project.banking.dto.request.CreateBankAccountRequest;
+import com.project.banking.enumerator.CardNetworkEnum;
 import com.project.banking.exception.ValidateRequestException;
 import com.project.banking.model.BankAccount;
 import com.project.banking.model.BankAccountCategory;
@@ -63,7 +64,10 @@ public class BankAccountServiceImpl implements BankAccountService {
                 .isActive(true)
                 .build();
 
-        //create debit card for checking bank accounts here.
+        cardService.createDebitCard(CardNetworkEnum.VISA.getId() == request.getCardNetworkId()
+                        ? CardNetworkEnum.VISA
+                        : CardNetworkEnum.MASTERCARD,
+                request.getCardName(), request.getPersonId());
 
         bankAccountRepository.save(bankAccount);
 

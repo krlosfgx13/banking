@@ -75,6 +75,7 @@ constraint fk_card_reward_program foreign key(reward_program_id) references rewa
 );
 
 
+
 create table card_transaction(
 card_transaction_id serial primary key not null,
 company_name varchar(256) not null,
@@ -186,6 +187,12 @@ constraint fk_card_transaction_reward_card foreign key(card_id) references card(
 -- select * from card_transaction order by transaction_date desc;
 
 -- select * from person;
+
+ALTER TABLE card
+ALTER COLUMN payment_date TYPE int using null;
+
+select * from card where card_type_id = 2;
+select * from card_type;
 
 
 
