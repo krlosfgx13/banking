@@ -1,3 +1,5 @@
+--create database bankingappdb;
+
 create table card_type(
 card_type_id serial primary key not null,
 card_type_name varchar(32) not null
@@ -60,7 +62,7 @@ card_type_id int not null,
 card_category_id int not null,
 pin smallint not null,
 cutoff_date date null,
-payment_date date null,
+payment_date int null,
 credit_limit numeric(8,2) null,
 credit_used numeric(8,2) null,
 reward_program_id int null,
@@ -188,11 +190,11 @@ constraint fk_card_transaction_reward_card foreign key(card_id) references card(
 
 -- select * from person;
 
-ALTER TABLE card
-ALTER COLUMN payment_date TYPE int using null;
+-- ALTER TABLE card
+-- ALTER COLUMN payment_date TYPE int using null;
 
-select * from card where card_type_id = 2;
-select * from card_type;
+-- select * from card where card_type_id = 2;
+-- select * from card_type;
 
 
 
