@@ -26,7 +26,7 @@ with open(output_file, "w") as f:
         category = random.choice(list(categories.keys()))
         company = random.choice(categories[category])
         amount = round(random.uniform(1.00, 1000.00), 2)
-        card_id = random.randint(45, 66)
+        card_id = random.randint(1, 22)
         date = random_date(start_date, end_date)
         sql = f"INSERT INTO card_transaction (company_category, company_name, transaction_amount, card_id, transaction_date) VALUES ('{category}', '{company}', {amount}, {card_id}, '{date}');\n"
         f.write(sql)

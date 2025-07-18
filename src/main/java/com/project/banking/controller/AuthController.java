@@ -13,6 +13,8 @@ import com.project.banking.dto.request.LoginRequest;
 import com.project.banking.dto.request.SignUpRequest;
 import com.project.banking.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,10 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import static com.project.banking.utils.MessageConstants.ENTITY_NOT_FOUND;
 
@@ -42,7 +41,7 @@ public class AuthController {
     private final RoleRepository roleRepository;
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
-
+    private final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     @PostMapping("/login")
     public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest request) {
@@ -54,11 +53,14 @@ public class AuthController {
             UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUserName());
             String token = jwtUtil.generateToken(userDetails.getUsername());
 
+            logger.error("User logged in successfully.");
             return ResponseEntity.ok(Collections.singletonMap("token", token));
         } catch (Exception ex){
-            System.out.println(ex.getMessage());
+            Map<String, String> errorMap = new HashMap<>();
+            errorMap.put("error", ex.getMessage());
+            logger.error("Invalid credentials.");
+            return ResponseEntity.ok(errorMap);
         }
-        return null;
     }
 
     @PutMapping("/changePassword/{id}")
