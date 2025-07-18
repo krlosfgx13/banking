@@ -23,6 +23,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -57,6 +58,8 @@ public class CardTransactionServiceImpl implements CardTransactionService {
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final CardTransactionRewardRepository cardTransactionRewardRepository;
     private static final Logger logger = LoggerFactory.getLogger(CardTransactionServiceImpl.class);
+    @Value("company.category.details.uri")
+    private String companyCategoryDetailsUri;
 
     @Override
     public BaseResponse processPayment(CardTransactionRequest request) {
@@ -152,7 +155,7 @@ public class CardTransactionServiceImpl implements CardTransactionService {
         Gson gson = new Gson();
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
-                .url("http://localhost:8081/api/pos/companies")
+                .url(companyCategoryDetailsUri)
                 .get()
                 .build();
 
