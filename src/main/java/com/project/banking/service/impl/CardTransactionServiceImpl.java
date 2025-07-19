@@ -58,7 +58,7 @@ public class CardTransactionServiceImpl implements CardTransactionService {
     private final NamedParameterJdbcTemplate jdbcTemplate;
     private final CardTransactionRewardRepository cardTransactionRewardRepository;
     private static final Logger logger = LoggerFactory.getLogger(CardTransactionServiceImpl.class);
-    @Value("company.category.details.uri")
+    @Value("${company.category.details.uri}")
     private String companyCategoryDetailsUri;
 
     @Override
