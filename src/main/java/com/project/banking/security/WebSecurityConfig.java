@@ -47,7 +47,7 @@ public class WebSecurityConfig {
                 .exceptionHandling(exceptionHandling -> exceptionHandling.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/api/auth/**", "/api/test/all").permitAll()
+                        .requestMatchers("/api/auth/**", "/api/test/all", "/api/host/info").permitAll()
                         .requestMatchers("/h2-console/**").permitAll() // Allow access to H2// Use 'requestMatchers' instead of 'antMatchers'
                         .anyRequest().authenticated()
                 );

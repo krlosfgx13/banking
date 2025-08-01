@@ -18,7 +18,10 @@ ENV SPRING_PROFILES_ACTIVE=default
 ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -Dspring.profiles.active=$SPRING_PROFILES_ACTIVE -jar bankingapp.jar"]
 
 # Run the JAR file
-#ENTRYPOINT ["java", "-jar", "bankingapp.jar"]	
+#ENTRYPOINT ["java", "-jar", "bankingapp.jar"]
+
+#build with:
+#docker build -t bankingapp:2.0.2 .
 
 #run with:
 #docker run --name=bankingapp -p 8082:8082 -e SPRING_PROFILES_ACTIVE=local -e JAVA_OPTS="-Xms512m -Xmx1024m" bankingapp 
