@@ -1,16 +1,23 @@
 package com.project.banking.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@Setter
 @Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "person")
-public class Person {
+public class Person implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "person_id")

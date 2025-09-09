@@ -196,10 +196,24 @@ constraint fk_card_transaction_reward_card foreign key(card_id) references card(
 -- select * from card where card_type_id = 2;
 -- select * from card_type;
 
+select * from api_user;
+select * from bank_account;
+
+select * from person;
 
 
+select ct.card_transaction_id, ct.company_name, ct.company_category, ct.transaction_amount, ct.transaction_date,
+c.card_id, c.card_number, p.person_id, u.user_name
+from card_transaction ct 
+join card c on ct.card_id = c.card_id
+join person p on c.person_id = p.person_id
+join user_account u on p.person_id = u.person_id
+where u.user_name = 'admin'
+order by ct.transaction_date desc;
 
+select * from user_Account;
 
+select * from person where nit = '3641619276';
 
 
 

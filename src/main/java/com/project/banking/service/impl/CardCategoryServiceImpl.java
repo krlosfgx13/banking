@@ -4,6 +4,7 @@ import com.project.banking.model.CardCategory;
 import com.project.banking.repository.CardCategoryRepository;
 import com.project.banking.dto.request.CardCategoryRequest;
 import com.project.banking.service.CardCategoryService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -32,6 +33,7 @@ public class CardCategoryServiceImpl implements CardCategoryService {
     }
 
     @Override
+    @Cacheable(value = "cardCategory", key = "#id")
     public Optional<CardCategory> getCardCategoryById(Long id) {
         return repository.findById(id);
     }

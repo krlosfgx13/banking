@@ -7,6 +7,8 @@ import com.project.banking.repository.PersonRepository;
 import com.project.banking.repository.UserAccountRepository;
 import com.project.banking.service.PersonService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,7 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
+    @Cacheable(value = "person", key = "#id")
     public Person getPersonById(Long id) {
         return personRepository.findById(id).orElseThrow(() -> new ValidateRequestException("Entity not found"));
     }
