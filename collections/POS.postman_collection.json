@@ -1,0 +1,79 @@
+{
+	"info": {
+		"_postman_id": "ed701957-a754-4207-a599-e7a347f50138",
+		"name": "POS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "42906439"
+	},
+	"item": [
+		{
+			"name": "POS Transaction",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc1Mjg4NjE4MywiZXhwIjoxNzUyODg5NzgzfQ.64TSCOReB2EPe24Az6dtFnlVuQ7h-PhmxQtZ-sBJs-Q",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"posId\": 1,\r\n    \"transactionAmount\": 2000.45,\r\n    \"cardNumber\": \"5650981730245348\",\r\n    \"cardType\": \"Credit\",\r\n    \"cardNetwork\": \"Mastercard\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}/api/pos/transaction"
+			},
+			"response": []
+		},
+		{
+			"name": "POS Transaction 2",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"posId\": 1,\r\n    \"transactionAmount\": 1400.00,\r\n    \"cardNumber\": \"4456789012345678\",\r\n    \"cardType\": \"Credit\",\r\n    \"cardNetwork\": \"Visa\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}/api/pos/transaction"
+			},
+			"response": []
+		},
+		{
+			"name": "GetHostInfo",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwaGVybmFuZGV6IiwiaWF0IjoxNzUyODczODM4LCJleHAiOjE3NTI4Nzc0Mzh9.29oKGbcf1UV3gyYEORKiHZNGQSpTrc8NPdH-6LqFpe0",
+						"type": "text"
+					}
+				],
+				"url": "http://localhost:8081/api/host/info"
+			},
+			"response": []
+		},
+		{
+			"name": "Get POS Companies",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{base_url}}/api/pos/companies"
+			},
+			"response": []
+		}
+	]
+}
